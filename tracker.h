@@ -36,7 +36,7 @@
 
 #include <cmath>
 #include <opencv2/opencv.hpp>
-#include <opencv/cv.h>
+#include <opencv2/opencv.hpp>
 #include <QtWidgets>
 #include <stdio.h>
 #include <vector>
@@ -71,15 +71,16 @@ struct ROI_track{
 };
 
 
-//Tracker class
-class Tracker : public QObject //Inherit from QObject class
+//MOSSETracker class
+class MOSSETracker : public QObject //Inherit from QObject class
 {
 
     Q_OBJECT
+    Q_DISABLE_COPY_MOVE(MOSSETracker)
 
 public:
-    Tracker();
-    ~Tracker();
+    MOSSETracker();
+    ~MOSSETracker();
 
     image_track prev_img;                               //Previous frame
     image_track current_img;                            //Current frame
@@ -119,7 +120,7 @@ signals:
 
 private:
 
-    Mat _filter;                                        //Tracker filter
+    Mat _filter;                                        //MOSSETracker filter
     Mat _HanningWin;                                    //Pre-processing Hanning-window
     bool _eps;
     bool _init;
@@ -151,7 +152,7 @@ private:
     //Compute Peak-to-Sidelobe Ratio
     float ComputePSR(const Mat &);
 
-    //Update Tracker
+    //Update MOSSETracker
     void Update(Point);
 
     //Update filter

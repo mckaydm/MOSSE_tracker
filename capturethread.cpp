@@ -69,13 +69,13 @@ void CaptureThread::run()
         {
             inputMutex.unlock();
             capMutex.lock();
-            if (cap.get(CV_CAP_PROP_FRAME_COUNT)-1 == cap.get(CV_CAP_PROP_POS_FRAMES))
+            if (cap.get(cv::CAP_PROP_FRAME_COUNT)-1 == cap.get(cv::CAP_PROP_POS_FRAMES))
             {
-                cap.set(CV_CAP_PROP_POS_FRAMES, 0);
+                cap.set(cv::CAP_PROP_POS_FRAMES, 0);
                 emit videoFinished();
             }
             capMutex.unlock();
-            msleep(1000/cap.get(CV_CAP_PROP_FPS));
+            msleep(1000/cap.get(cv::CAP_PROP_FPS));
         }
         else if (inputMode == INPUT_CAMERA)
         {

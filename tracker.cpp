@@ -34,7 +34,7 @@
 #include <QDebug>
 #include "tracker.h"
 
-Tracker::Tracker()
+MOSSETracker::MOSSETracker()
 {
     //Var initialization
     this->state_ = FOUND;
@@ -52,13 +52,13 @@ Tracker::Tracker()
 
 }
 
-Tracker::~Tracker()
+MOSSETracker::~MOSSETracker()
 {
 
 
 }
 
-void Tracker::InitTracker(const Mat &input_image, QPoint topLeft, QPoint bottomRight)
+void MOSSETracker::InitTracker(const Mat &input_image, QPoint topLeft, QPoint bottomRight)
 {//Init tracker from user selection
 
     this->InitTracker(input_image,
@@ -68,7 +68,7 @@ void Tracker::InitTracker(const Mat &input_image, QPoint topLeft, QPoint bottomR
 
 }
 
-void Tracker::InitTracker(const Mat &input_image, Rect input_rect)
+void MOSSETracker::InitTracker(const Mat &input_image, Rect input_rect)
 {//Init tracker from user selection
 
     if (this->_init) return;
@@ -95,7 +95,7 @@ void Tracker::InitTracker(const Mat &input_image, Rect input_rect)
     this->_init = true;
 }
 
-void Tracker::SetRoi(Rect input_ROI)
+void MOSSETracker::SetRoi(Rect input_ROI)
 {//Init ROI position and center
 
     this->current_ROI.ROI = input_ROI;
@@ -103,7 +103,7 @@ void Tracker::SetRoi(Rect input_ROI)
     this->current_ROI.ROI_center.y = round(input_ROI.height/2);
 }
 
-void Tracker::Track(const Mat &input_image)
+void MOSSETracker::Track(const Mat &input_image)
 {//Perform tracking over current frame
 
     if (!this->_init) return;
@@ -122,11 +122,11 @@ void Tracker::Track(const Mat &input_image)
     if(new_loc.x>=0 && new_loc.y>=0)                                            //If PSR > ratio then update
     {
         this->state_ = FOUND;
-        Update(new_loc);                                                        //Update Tracker
+        Update(new_loc);                                                        //Update MOSSETracker
     } else this->state_ = OCCLUDED;
 }
 
-void Tracker::ComputeDFT(image_track &input_image, bool preprocess)
+void MOSSETracker::ComputeDFT(image_track &input_image, bool preprocess)
 {//Compute Direct Fourier Transform on input image, with or without a pre-processing
 
     Mat res = this->ComputeDFT(input_image.real_image, preprocess);
@@ -136,7 +136,7 @@ void Tracker::ComputeDFT(image_track &input_image, bool preprocess)
     input_image.opti_dft_comp_cols = res.cols;
 }
 
-Mat Tracker::ComputeDFT(const Mat &input_image, bool preprocess)
+Mat MOSSETracker::ComputeDFT(const Mat &input_image, bool preprocess)
 {//Compute Direct Fourier Transform on input image, with or without a pre-processing
 
     Mat gray_padded, complexI;
@@ -158,7 +158,7 @@ Mat Tracker::ComputeDFT(const Mat &input_image, bool preprocess)
     input_image.copyTo(gray_padded);
 
     //If input image is RGB, convert to gray scale
-    if (gray_padded.channels() > 1) cvtColor(gray_padded,gray_padded,CV_RGB2GRAY);
+    if (gray_padded.channels() > 1) cv::cvtColor(gray_padded,gray_padded,cv::COLOR_RGB2GRAY);
     gray_padded.convertTo(gray_padded,CV_32F);
 
     if (preprocess)     //Apply pre-processing to input image
@@ -211,7 +211,7 @@ Mat Tracker::ComputeDFT(const Mat &input_image, bool preprocess)
     return complexI;
 }
 
-Point Tracker::PerformTrack()
+Point MOSSETracker::PerformTrack()
 {
     Mat mat_correlation,idft_correlation;
     float PSR_val;
@@ -297,7 +297,7 @@ Point Tracker::PerformTrack()
     return maxLoc;
 }
 
-float Tracker::ComputePSR(const Mat &correlation_mat)
+float MOSSETracker::ComputePSR(const Mat &correlation_mat)
 {//Compute Peak-to-Sidelobe Ratio
 
     double max_val = 0;
@@ -328,7 +328,7 @@ float Tracker::ComputePSR(const Mat &correlation_mat)
     return (max_val - mean.val[0]) / stddev.val[0];     //Compute PSR
 }
 
-void Tracker::UpdateRoi(Point new_center, bool scale_rot)
+void MOSSETracker::UpdateRoi(Point new_center, bool scale_rot)
 {//Update ROI position
 
     int diff_x,diff_y;
@@ -377,15 +377,15 @@ void Tracker::UpdateRoi(Point new_center, bool scale_rot)
     this->current_ROI.ROI.height = this->prev_ROI.ROI.height;
 }
 
-void Tracker::Update(Point new_location)
-{//Update Tracker
+void MOSSETracker::Update(Point new_location)
+{//Update MOSSETracker
 
     UpdateFilter();                         //Update filter
     this->prev_img = this->current_img;     //Update frame
     UpdateRoi(new_location,false);          //Update ROI position
 }
 
-void Tracker::InitFilter()
+void MOSSETracker::InitFilter()
 {//Init filter from user selection
 
     Mat affine_G, affine_image, temp_image_dft, temp_desi_G, filter;
@@ -454,7 +454,7 @@ void Tracker::InitFilter()
     //inverseAndSave(filter, "filter_inv_shift.jpg", true);
 }
 
-void Tracker::AffineTransform(const Mat &input_image, const Mat &input_image2, Mat &aff_img, Mat &aff_img2)
+void MOSSETracker::AffineTransform(const Mat &input_image, const Mat &input_image2, Mat &aff_img, Mat &aff_img2)
 {//Apply same randomly defined affine transform to both input matrice
 
     if (input_image.size() != input_image2.size())
@@ -501,7 +501,7 @@ void Tracker::AffineTransform(const Mat &input_image, const Mat &input_image2, M
     warpAffine( input_image2, aff_img2, affine_tr, aff_img2.size() );
 }
 
-void Tracker::MaskDesiredG(Mat &output,int u_x,int u_y,double sigma, bool norm_energy)
+void MOSSETracker::MaskDesiredG(Mat &output,int u_x,int u_y,double sigma, bool norm_energy)
 {//Create 2D Gaussian
 
     sigma *= sigma;
@@ -525,7 +525,7 @@ void Tracker::MaskDesiredG(Mat &output,int u_x,int u_y,double sigma, bool norm_e
 
 }
 
-void Tracker::UpdateFilter()
+void MOSSETracker::UpdateFilter()
 {//Update filter
     Mat Ai,Bi,Ai_1,Bi_1,A,B,filter,eps,eps_1;
 
@@ -562,7 +562,7 @@ void Tracker::UpdateFilter()
 
 }
 
-void Tracker::inverseAndSave(const cv::Mat &img, const std::string &filename, const bool &shift)
+void MOSSETracker::inverseAndSave(const cv::Mat &img, const std::string &filename, const bool &shift)
 {//Inverse DFT and save image
 
     cv::Mat img_i;
@@ -590,7 +590,7 @@ void Tracker::inverseAndSave(const cv::Mat &img, const std::string &filename, co
     cv::imwrite(filename, img_i);
 }
 
-Mat Tracker::conj(const Mat &input_dft)
+Mat MOSSETracker::conj(const Mat &input_dft)
 {//Compute complex conjugate
 
     assert (input_dft.channels() == 2);
@@ -611,7 +611,7 @@ Mat Tracker::conj(const Mat &input_dft)
     return conj_dft;
 }
 
-void Tracker::dftDiv(const Mat &dft_a, const Mat &dft_b, Mat &output_dft)
+void MOSSETracker::dftDiv(const Mat &dft_a, const Mat &dft_b, Mat &output_dft)
 {//Compute complex divison
 
     assert (dft_a.size() == dft_b.size() && dft_a.type() == dft_b.type() &&
@@ -638,7 +638,7 @@ void Tracker::dftDiv(const Mat &dft_a, const Mat &dft_b, Mat &output_dft)
     out_temp.copyTo(output_dft);
 }
 
-Mat Tracker::createEps(const Mat &input_, double std)
+Mat MOSSETracker::createEps(const Mat &input_, double std)
 {//Compute regularization parameter for a given input matrix
 
     //Compute input matrix mean and std
@@ -668,62 +668,62 @@ Mat Tracker::createEps(const Mat &input_, double std)
 }
 
 /* ------------------------------------ */
-Rect Tracker::getPosition() const       //Get ROI position
+Rect MOSSETracker::getPosition() const       //Get ROI position
 {
     return current_ROI.ROI;
 }
 
-int Tracker::getState() const
+int MOSSETracker::getState() const
 {
     return state_;
 }
 
-bool Tracker::isInitialized() const     //Verify tracker is init
+bool MOSSETracker::isInitialized() const     //Verify tracker is init
 {
     return _init;
 }
 
-void Tracker::SetPSR_mask(int input)        //Set PSR var
+void MOSSETracker::SetPSR_mask(int input)        //Set PSR var
 {
     this->PSR_mask = input;
 }
 
-void Tracker::SetPSR_ratio_low(int input)
+void MOSSETracker::SetPSR_ratio_low(int input)
 {
     this->PSR_ratio[0] = input;
 }
 
-void Tracker::SetPSR_ratio_high(int input)
+void MOSSETracker::SetPSR_ratio_high(int input)
 {
     this->PSR_ratio[1] = input;
 }
 
-int Tracker::GetPSR_mask() const        //Get PSR var
+int MOSSETracker::GetPSR_mask() const        //Get PSR var
 {
     return this->PSR_mask;
 }
 
-int Tracker::GetPSR_ratio_low() const
+int MOSSETracker::GetPSR_ratio_low() const
 {
     return this->PSR_ratio[0];
 }
 
-int Tracker::GetPSR_ratio_high() const
+int MOSSETracker::GetPSR_ratio_high() const
 {
     return this->PSR_ratio[1];
 }
 
-Mat Tracker::GetFilter() const      //Get filter
+Mat MOSSETracker::GetFilter() const      //Get filter
 {
     return this->_filter;
 }
 
-float Tracker::Get_Learning() const     //Get/Set learning ratio
+float MOSSETracker::Get_Learning() const     //Get/Set learning ratio
 {
     return this->_learning;
 }
 
-void Tracker::Set_Learning(float val)
+void MOSSETracker::Set_Learning(float val)
 {
     this->_learning = val;
 }

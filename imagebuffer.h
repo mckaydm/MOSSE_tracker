@@ -5,7 +5,7 @@
 #include <QMutex>
 #include <QQueue>
 #include <QSemaphore>
-#include <opencv/highgui.h>
+#include <opencv2/highgui.hpp>
 #include "cimage.h"
 
 class ImageBuffer : public QObject

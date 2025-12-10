@@ -2,7 +2,7 @@
 #define PROCESSINGTHREAD_H
 #include <QThread>
 #include <QtGui>
-#include <opencv/highgui.h>
+#include <opencv2/highgui.hpp>
 #include "imagebuffer.h"
 #include "cimage.h"
 #include "tracker.h"
@@ -25,7 +25,7 @@ public:
     void play()                               { QMutexLocker locker(&pauseMutex); paused = false; }
     bool isPaused()                           { return paused; }
 
-    Tracker       *tracker_;
+    MOSSETracker       *tracker_;
 
 public slots:
     void setTarget(QRect rect, QPoint zeroP)  { targetRect_ = rect;

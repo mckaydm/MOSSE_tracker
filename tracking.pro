@@ -56,3 +56,11 @@ LIBS += -lopencv_highgui \
 #INCLUDEPATH += $$A_OPENCV/jni/include/opencv
 #INCLUDEPATH += $$A_OPENCV/jni/include/opencv2
 #INCLUDEPATH += $$A_OPENCV/jni/include
+
+# OpenCV configuration
+CONFIG += link_pkgconfig
+PKGCONFIG += opencv4
+
+# Additional OpenCV include path
+INCLUDEPATH += /usr/include/opencv4
+

@@ -5,7 +5,7 @@
 #include "imagebuffer.h"
 #include "processingthread.h"
 #include <QtGui>
-#include <opencv/highgui.h>
+#include <opencv2/highgui.hpp>
 
 
 class Controller : public QObject

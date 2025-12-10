@@ -3,7 +3,7 @@
 
 #include <QThread>
 #include <QtGui>
-#include "opencv/highgui.h"
+#include <opencv2/highgui.hpp>
 #include "imagebuffer.h"
 
 class CaptureThread : public QThread
@@ -16,8 +16,8 @@ public:
 
     void setInputMode(int m)    { QMutexLocker locker(&inputMutex); inputMode = m; }
     bool isCameraConnected()    { return cap.isOpened(); }
-    int  getInputSourceWidth()  { return cap.get(CV_CAP_PROP_FRAME_WIDTH); }
-    int  getInputSourceHeight() { return cap.get(CV_CAP_PROP_FRAME_HEIGHT); }
+    int  getInputSourceWidth()  { return cap.get(cv::CAP_PROP_FRAME_WIDTH); }
+    int  getInputSourceHeight() { return cap.get(cv::CAP_PROP_FRAME_HEIGHT); }
     void pause()                { QMutexLocker locker(&pauseMutex); paused = true; }
     void play()                 { QMutexLocker locker(&pauseMutex); paused = false; }
     bool isPaused()             { return paused; }

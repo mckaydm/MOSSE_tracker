@@ -1,6 +1,6 @@
 #include <QDebug>
-#include <opencv/cv.h>
-#include <opencv/highgui.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/highgui.hpp>
 #include "imagebuffer.h"
 #include "processingthread.h"
 
@@ -11,7 +11,7 @@ ProcessingThread::ProcessingThread(ImageBuffer *imageBuffer)
     , paused(false)
     , targetSetted_(false)
 {
-    tracker_ = new Tracker();
+    tracker_ = new MOSSETracker();
 }
 
 ProcessingThread::~ProcessingThread()
